@@ -8,6 +8,10 @@ requirements = []
 path = "contracts/zenpulse-profile.clar"
 depends_on = []
 
+[contracts.zenpulse-sessions]
+path = "contracts/zenpulse-sessions.clar"
+depends_on = []
+
 [repl]
 costs_version = 2
 parser_version = 2
