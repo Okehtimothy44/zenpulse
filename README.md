@@ -1,48 +1,84 @@
 # ZenPulse
 
-A blockchain-powered meditation app with personalized music, breathing exercises, and user rewards.
+A blockchain-powered meditation app with personalized music, breathing exercises, and user rewards, leveraging Stacks blockchain for transparent and secure user experience tracking.
 
 ## Project Overview
 
-ZenPulse is a decentralized application that aims to provide users with a comprehensive meditation experience, leveraging the Stacks blockchain. The key features of the ZenPulse project include:
+ZenPulse is a decentralized application that provides users with a comprehensive meditation experience, leveraging the Stacks blockchain. The key features of the ZenPulse project include:
 
 - Secure and private logging of meditation sessions
-- Tracking of user meditation streaks and progress
-- Personalized music recommendations and breathing techniques
+- Personalized content recommendations based on mood and preferences
+- Advanced tracking of meditation streaks and progress
 - Reward token system to incentivize regular meditation practice
+- Content marketplace for meditation guides and music
 
-The ZenPulse project is composed of two main smart contracts:
+The ZenPulse project consists of four main smart contracts:
 
-1. **ZenPulse Sessions**: Responsible for managing meditation session logging, streak tracking, and reward distribution.
-2. **ZenPulse Profile**: Handles user profile creation, updates, and mood history tracking.
+1. **User Profile**: Manages user profiles, preferences, and meditation history
+2. **Meditation Tracker**: Handles session logging and streak calculations
+3. **Zen Token**: Implements the reward token system
+4. **Content Registry**: Manages meditation content and recommendations
 
 ## Contract Architecture
 
-### ZenPulse Sessions Contract
+### User Profile Contract
 
-The `zenpulse-sessions.clar` contract is responsible for managing the ZenPulse meditation sessions, including:
+The `user-profile.clar` contract manages user profiles and preferences, including:
 
-1. **Session Logging**: The `log-meditation-session` function allows users to log their meditation sessions, validating the session parameters and preventing duplicate entries.
-2. **Streak Tracking**: The `update-user-streak` private function calculates the user's current meditation streak based on the time between sessions.
-3. **Reward Distribution**: The `calculate-weekly-reward` private function determines if the user has met the streak threshold for receiving weekly reward tokens, updating the user's reward balance accordingly.
-4. **Read-only Functions**: The contract provides read-only functions to retrieve the user's current streak, total reward tokens, and details of a specific meditation session.
+1. **Profile Management**: Create and update user profiles with preferences for breathing patterns, music, and session duration
+2. **Session History**: Track individual meditation sessions with detailed metadata
+3. **Streak Tracking**: Calculate and maintain user meditation streaks
+4. **Data Privacy**: Ensure users maintain control over their personal information
 
-The contract uses the following data structures:
+Key data structures:
+- `user-profiles`: Stores user preferences and meditation statistics
+- `meditation-sessions`: Records individual session details
+- `user-session-counters`: Tracks session IDs for each user
 
-- `meditation-sessions`: A map that stores the details of each user's meditation sessions, keyed by the user principal and session timestamp.
-- `user-streaks`: A map that tracks the current meditation streak and the timestamp of the last session for each user.
-- `user-rewards`: A map that stores the total reward tokens earned and the last week the user received a reward for each user.
+### Meditation Tracker Contract
 
-### ZenPulse Profile Contract
+The `meditation-tracker.clar` contract handles meditation session tracking and analytics:
 
-The `zenpulse-profile.clar` contract is responsible for managing the user profiles for the ZenPulse application, including:
+1. **Session Recording**: Log meditation sessions with duration, type, and mood states
+2. **Streak Calculation**: Advanced streak tracking with consecutive day bonuses
+3. **Statistics**: Track total sessions, minutes meditated, and other metrics
+4. **Monthly Analytics**: Generate user statistics for specific time periods
 
-1. **Profile Creation and Updates**: The `create-or-update-profile` function allows users to create a new profile or update an existing one. It includes input validation to ensure the data conforms to the specified constraints.
-2. **Mood History Tracking**: The profile stores a list of the user's recent moods, with a maximum size of 10 entries.
-3. **Total Meditation Minutes Tracking**: The profile stores the total number of meditation minutes a user has logged, which can be updated using the `update-meditation-minutes` function.
-4. **Read-only Functions**: The contract provides read-only functions to retrieve the user's full profile and their total meditation minutes.
+Key features:
+- Immutable session records
+- Multiple meditation type support
+- Mood tracking before and after sessions
+- Comprehensive analytics functions
 
-The contract uses a single data structure, the `user-profiles` map, to store the user profile information, keyed by the user's principal.
+### Zen Token Contract
+
+The `zen-token.clar` contract implements the reward token system:
+
+1. **Token Distribution**: Mint and distribute tokens for completed sessions
+2. **Streak Bonuses**: Additional rewards for maintaining streaks
+3. **Milestone Rewards**: Special rewards for reaching meditation milestones
+4. **Token Redemption**: Exchange tokens for premium content or features
+
+Token mechanics:
+- Session completion rewards
+- Streak multipliers
+- Milestone achievements
+- Content marketplace integration
+
+### Content Registry Contract
+
+The `content-registry.clar` contract manages meditation content and recommendations:
+
+1. **Content Management**: Register and verify meditation content
+2. **Recommendation System**: Personalized content suggestions based on user preferences
+3. **Rating System**: Community-driven content quality assessment
+4. **Content Indexing**: Efficient content discovery by mood and type
+
+Features:
+- Content verification system
+- Mood-based recommendations
+- Usage tracking
+- Creator attribution
 
 ## Installation & Setup
 
@@ -54,73 +90,67 @@ Installation steps:
 2. Navigate to the project directory: `cd zenpulse`
 3. Install dependencies: `npm install`
 
-Configuration:
-- The project includes Clarinet configuration files for different deployment environments (Devnet, Mainnet, Testnet) in the `settings/` directory.
-- Modify the appropriate configuration file to set up your deployment environment.
-
 ## Usage Guide
 
-### Logging a Meditation Session
-
-To log a meditation session, call the `log-meditation-session` function on the `zenpulse-sessions` contract, providing the session duration and meditation type:
+### Creating a User Profile
 
 ```clarity
-(contract-call? 'zenpulse-sessions log-meditation-session u30 "Mindfulness")
+(contract-call? .user-profile create-profile 
+  "John Doe"
+  "box"
+  "ambient"
+  u20)
 ```
 
-This will log the meditation session, update the user's streak, and potentially distribute weekly reward tokens.
-
-### Retrieving User Information
-
-To retrieve a user's current meditation streak, call the `get-user-streak` read-only function on the `zenpulse-sessions` contract:
+### Recording a Meditation Session
 
 ```clarity
-(contract-call? 'zenpulse-sessions get-user-streak 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)
+(contract-call? .meditation-tracker record-session 
+  u30
+  "mindfulness"
+  "stressed"
+  "calm"
+  (some u"Great session today"))
 ```
 
-To retrieve a user's total reward tokens, call the `get-user-rewards` read-only function on the `zenpulse-sessions` contract:
+### Claiming Rewards
 
 ```clarity
-(contract-call? 'zenpulse-sessions get-user-rewards 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)
+(contract-call? .zen-token claim-milestone-reward tx-sender)
 ```
 
-### Managing User Profiles
-
-To create or update a user profile, call the `create-or-update-profile` function on the `zenpulse-profile` contract, providing the necessary parameters:
+### Finding Meditation Content
 
 ```clarity
-(contract-call? 'zenpulse-profile create-or-update-profile u30 u7 "Jazz" "Calm" "Zen")
-```
-
-To retrieve a user's profile, call the `get-user-profile` read-only function on the `zenpulse-profile` contract:
-
-```clarity
-(contract-call? 'zenpulse-profile get-user-profile 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)
+(contract-call? .content-registry get-recommendations 
+  tx-sender 
+  MOOD-CALM
+  u5)
 ```
 
 ## Testing
 
-The ZenPulse project includes comprehensive test suites for both the `zenpulse-sessions` and `zenpulse-profile` contracts, covering the following scenarios:
-
-- Logging meditation sessions and handling invalid inputs
-- Calculating and updating user streaks
-- Distributing weekly reward tokens
-- Creating and updating user profiles with valid and invalid inputs
-- Tracking user mood history
-
-To run the tests, use the Clarinet CLI:
+The project includes comprehensive test suites for all contracts. To run the tests:
 
 ```bash
 clarinet test
 ```
 
+Test coverage includes:
+- Profile creation and management
+- Session recording and streak calculation
+- Token distribution and redemption
+- Content recommendation system
+- Security and access control
+
 ## Security Considerations
 
-The ZenPulse contracts include several security measures:
+The ZenPulse contracts implement several security measures:
 
-1. **Input Validation**: All public functions validate the input parameters to ensure they conform to the expected constraints, rejecting invalid data.
-2. **Duplicate Session Prevention**: The `log-meditation-session` function checks for and rejects attempts to log the same session twice within the same block.
-3. **Permissions and Authorization**: The contracts only allow the transaction sender (the user) to perform actions on their own data, ensuring secure access control.
-4. **Data Integrity**: The contracts use Clarity's built-in data types and data structures to maintain the integrity of stored information, such as user profiles and meditation sessions.
+1. **Access Control**: Strict function access controls and admin privileges
+2. **Input Validation**: Comprehensive validation for all user inputs
+3. **Data Privacy**: User control over personal information
+4. **Token Security**: Safe token minting and transfer mechanisms
+5. **Content Verification**: Multi-step content validation process
 
-Additionally, the contracts have been thoroughly tested to ensure their correct behavior and resilience against common security vulnerabilities.
+The contracts have been designed with security best practices and undergo regular audits to ensure the safety of user data and assets.
