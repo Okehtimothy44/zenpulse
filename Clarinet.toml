@@ -12,6 +12,10 @@ depends_on = []
 path = "contracts/user-profile.clar"
 depends_on = []
 
+[contracts.zen-token]
+path = "contracts/zen-token.clar"
+depends_on = []
+
 [contracts.zenpulse-profile]
 path = "contracts/zenpulse-profile.clar"
 depends_on = []
